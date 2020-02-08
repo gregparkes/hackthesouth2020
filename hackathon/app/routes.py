@@ -7,26 +7,37 @@ def select(imageS, df1, df3):
     '''Selects the images for the next question.
     Based on the previously selected image (imageS)
     '''
-    img = df1[df1['OriginalURL']==imageS]
-    labels = img.iloc[0,6].split(";")
+    img =Image.query.filter_by(Originalurl=imageS).first()
+    #img = df1[df1['OriginalURL']==imageS]
+    labels = img.LabelName.split(";")
+    #labels = img.iloc[0,6].split(";")
     images = []
     if len(labels) >= 4:
         for i in range(4):
-            match = df3[df3['LabelName']==labels[i]]
-            mtch = match[match['ImageID']==img.index[0]]
-            tmp = df3[df3["LabelName"] == mtch.iloc[0]["LabelName"]]
-            index = tmp["Confidence"].idxmax()
-            imageid = df3.iloc[index]["ImageID"]
-            image = df1[df1.index==imageid]["OriginalURL"][0]
-            images.append(image)
+            match = df3.query.filter_by(LabelName=labels[i]).all()
+            #match = df3[df3['LabelName']==labels[i]]
+            mtch = match.query.filter_by(imageid=img.imageid).all()
+            #mtch = match[match['ImageID']==img.index[0]]
+            tmp = df3.query.filter_by(LabelName=mtch.labelname).all()
+            #tmp = df3[df3["LabelName"] == mtch.iloc[0]["LabelName"]]
+            index = tmp.Confidence.argmax).all()
+            #index = tmp["Confidence"].idxmax()
+            
+            #imageid = df3.iloc[index]["ImageID"]
+            image = df1.query.filter_by(imageid=df3.imageid).all()
+            #image = df1[df1.index==imageid]["OriginalURL"][0]
+            images.append(image.originalurl)
+            #images.append(image)
     else:
         list1 = []
         for i in range(4):
             r = randint(0,len(df1))
             if r not in list1: 
                 list1.append(r)
-            image = df1.iloc[list[i], 1]
-            images.append(image)
+            image = df1.query.filter_by(id=list[i])
+            #image = df1.iloc[list[i], 1]
+            images.append(image.originalurl)
+            #images.append(image)
     return images[0],images[1],images[2],images[3]
 
 @app.route('/')
