@@ -14,7 +14,9 @@
 *.msg
 *.tcl
 *.ini
-hackathon/*
+hackathon/data/*
+hackathon/migrations/*
+hackathon/hackathon/*
 
 /__pycache__/
 **/*.aux
