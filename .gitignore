@@ -1,6 +1,19 @@
 *.xls
 *.xlsx
 *.csv
+*.h
+*.c
+*.cpp
+*.exe
+*.bat
+*.xsh
+*.ps1
+*.flaskenv
+.gitattributes
+*.enc
+*.msg
+*.tcl
+*.ini
 
 /__pycache__/
 **/*.aux
