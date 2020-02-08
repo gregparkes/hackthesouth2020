@@ -3,6 +3,32 @@ from app import app
 from app.models import Image
 import csv 
 
+def select(imageS, df1, df3):
+    '''Selects the images for the next question.
+    Based on the previously selected image (imageS)
+    '''
+    img = df1[df1['OriginalURL']==imageS]
+    labels = img.iloc[0,6].split(";")
+    images = []
+    if len(labels) >= 4:
+        for i in range(4):
+            match = df3[df3['LabelName']==labels[i]]
+            mtch = match[match['ImageID']==img.index[0]]
+            tmp = df3[df3["LabelName"] == mtch.iloc[0]["LabelName"]]
+            index = tmp["Confidence"].idxmax()
+            imageid = df3.iloc[index]["ImageID"]
+            image = df1[df1.index==imageid]["OriginalURL"][0]
+            images.append(image)
+    else:
+        list1 = []
+        for i in range(4):
+            r = randint(0,len(df1))
+            if r not in list1: 
+                list1.append(r)
+            image = df1.iloc[list[i], 1]
+            images.append(image)
+    return images[0],images[1],images[2],images[3]
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -23,6 +49,7 @@ def ajax_receive():
         text_file = open("C:/users/zuzan/desktop/sample.txt", "w")
         text_file.write(x)
         text_file.close()
+        image5, image6, image7, image8 = select(x, df1, df3)
         
         
     return render_template('index.html')
