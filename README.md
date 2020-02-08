@@ -7,6 +7,7 @@ This is the official GitHub account for the Hack-The-South team in the Universit
 - Movie dataset can be found [here](https://www.kaggle.com/rounakbanik/the-movies-dataset#movies_metadata.csv).
 - Documentation to build a website in Python using `flask` found [here](https://flask.palletsprojects.com/en/1.1.x/quickstart/).
 - Pandas documentation can be found [here](https://pandas.pydata.org/pandas-docs/stable/reference/index.html).
+- link to google drive folder with images data found [here](https://drive.google.com/drive/folders/1Aw7QUgscgR8xOne6Rdjl4bmTaOU8iqtV?usp=sharing)
 
 ## TODO:
 
