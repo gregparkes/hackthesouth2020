@@ -1,66 +1,60 @@
-from flask import render_template, flash, redirect, url_for,request
+from flask import render_template, flash, redirect, url_for,request,jsonify
 from app import app
-from app.models import Image
-import csv 
-
-def select(imageS, df1, df3):
-    '''Selects the images for the next question.
-    Based on the previously selected image (imageS)
-    '''
-    img =Image.query.filter_by(Originalurl=imageS).first()
-    #img = df1[df1['OriginalURL']==imageS]
-    labels = img.LabelName.split(";")
-    #labels = img.iloc[0,6].split(";")
-    images = []
-    if len(labels) >= 4:
-        for i in range(4):
-            match = df3.query.filter_by(LabelName=labels[i]).all()
-            #match = df3[df3['LabelName']==labels[i]]
-            mtch = match.query.filter_by(imageid=img.imageid).all()
-            #mtch = match[match['ImageID']==img.index[0]]
-            tmp = df3.query.filter_by(LabelName=mtch.labelname).all()
-            #tmp = df3[df3["LabelName"] == mtch.iloc[0]["LabelName"]]
-            index = tmp.Confidence.argmax).all()
-            #index = tmp["Confidence"].idxmax()
-            
-            #imageid = df3.iloc[index]["ImageID"]
-            image = df1.query.filter_by(imageid=df3.imageid).all()
-            #image = df1[df1.index==imageid]["OriginalURL"][0]
-            images.append(image.originalurl)
-            #images.append(image)
-    else:
-        list1 = []
-        for i in range(4):
-            r = randint(0,len(df1))
-            if r not in list1: 
-                list1.append(r)
-            image = df1.query.filter_by(id=list[i])
-            #image = df1.iloc[list[i], 1]
-            images.append(image.originalurl)
-            #images.append(image)
-    return images[0],images[1],images[2],images[3]
-
+from app.models import Image,select
+import pandas as pd
+from random import randint
+from app import word2vectorizer as w2v
+#df1 = pd.read_csv("C:/Users/zuzan/desktop/images.csv")
+#df2 = pd.read_csv("C:/Users/zuzan/desktop/dict.csv")
 @app.route('/')
 @app.route('/index')
 def index():
-    
-    image1= 'https://farm7.staticflickr.com/5769/21094803716_da3cea21b8_o.jpg'
-    image2='https://c8.staticflickr.com/7/6007/6010263871_9d6dbce6ce_o.jpg'
-    image3='https://farm1.staticflickr.com/2934/14439122755_d4af7552d1_o.jpg'
-    image4='https://c2.staticflickr.com/9/8089/8416776003_9f2636ca56_o.jpg'
+    list_random = []
+    for i in range(4):
+        r = randint(0,167053)
+        if r not in list_random: 
+            list_random.append(r)
+            
+    image1= Image.query.get(list_random[0]).Thumbnail300kurl
+    image2= Image.query.get(list_random[1]).Thumbnail300kurl
+    image3=Image.query.get(list_random[2]).Thumbnail300kurl
+    image4=Image.query.get(list_random[3]).Thumbnail300kurl
+
     
     return render_template('index.html', title='Home',image1=image1,image2=image2,image3=image3,image4=image4)
 
 
 @app.route('/getdata',methods=['GET', 'POST'])
 def ajax_receive():
-    
+    img, lbl = w2v.generate_image_label_pairing()
+    df = w2v.generate_nlp()
     if request.method == "POST":
-        x = request.form['url']
-        text_file = open("C:/users/zuzan/desktop/sample.txt", "w")
-        text_file.write(x)
-        text_file.close()
-        image5, image6, image7, image8 = select(x, df1, df3)
+        tw = None
+        image_url = request.form['url']
+        c = request.form['c']
+        subset = w2v.link_url_to_words(img, lbl, image_url)
+        if int(c)>=3:
+            tw = w2v.link_words_to_movies(list(subset), df)
+        if subset:
+            subset1 = w2v.link_url_to_words(img, lbl, image_url)
+            for i in range(len(subset1)):
+                subset.append(subset1[i])        
+        list_random = []
+        for i in range(4):
+            r = randint(0,167053)
+            if r not in list_random: 
+                list_random.append(r)
+            
+        new_image1= Image.query.get(list_random[0]).Thumbnail300kurl
+        new_image2= Image.query.get(list_random[1]).Thumbnail300kurl
+        new_image3=Image.query.get(list_random[2]).Thumbnail300kurl
+        new_image4=Image.query.get(list_random[3]).Thumbnail300kurl
+        if tw:
+            data=jsonify({'image1': new_image1, 'image2': new_image2,'image3': new_image3,'image4': new_image4,"tw":tw})
+        else:
+            data=jsonify({'image1': new_image1, 'image2': new_image2,'image3': new_image3,'image4': new_image4,"tw":None})
+        return data
+
         
         
     return render_template('index.html')

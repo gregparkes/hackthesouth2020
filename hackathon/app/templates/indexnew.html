@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<html>
+<head>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<style>
+
+.quizbox {
+    top: 0;
+  display: grid;
+  grid-template-columns: 50% auto;
+  bottom: 0;
+  margin: auto;
+  align-content: space-around;
+  max-width: 100vw;
+}
+
+.quizbox > .picture { 
+    display: flex;
+  padding: 1vw;
+  margin: auto;
+  width: 20vw;
+  height: 20vw;
+}
+
+.picture img{
+	margin: auto;
+	max-width: 15vw;
+	display: flex;
+	justify-content: space-between;
+	border-radius: 13%;
+	height: 80%;
+	box-shadow: 1vh 1vh 0.2vmax #FFFFFF;
+	object-fit: cover;
+}
+
+.picture:hover img {
+	opacity: 0.3;
+	box-shadow: 1vh 1vh 0.2vmax tomato;
+}
+
+
+
+.titleText {
+	background-color: white;
+	color: tomato;
+	width: 80%;
+	z-index: 2;
+	display: inline-block;
+	border-radius: 4vh;
+	word-wrap: break-word;
+    text-align: center
+}
+
+a {
+	text-decoration: none;
+}
+
+h1 {
+	font-family: "Montserrat", "Verdana";
+	text-align: center;
+	font-size: 12vh;
+	margin: 0;
+}
+
+h2 {
+	font-family: "Lato", "Open Sans";
+	font-size: 4vw;
+}
+
+
+</style>
+<script>
+$(document).ready(function(){
+
+
+$('.picture').click(function(){
+var object = $(this).children('img').attr("src")
+var data = JSON.stringify(object);
+$.ajax({
+   type: "POST",
+   url: "/getdata",
+   data: {"url":object},
+   success: function(data){
+       alert(data.c)
+    if(!data.finish) {
+     $('#im1').attr('src',data.image1)
+     $('#im2').attr('src',data.image2) 
+     $('#im3').attr('src',data.image3)  
+     $('#im4').attr('src',data.image4)  }
+     if(data.finish){
+     alert("the movie of your choice is Shrek!!")}
+  
+},
+   error: function(){
+    alert("error")
+   }
+})
+$.when($.ajax("/getdata")).then(countC, myFailure);
+})
+})
+</script>
+
+
+</head>
+
+<body> 
+		<div class="titleText">
+			<ul><h2>Ultimate film quiz</h2><ul>
+			<ul><p>Pick picture that is closest to your heart and we will give you a movie that you have always (subconciously) wanted to watch...</p><ul>
+		</div>
+
+<div class="quizbox">
+ <div class=picture> <img id=im1 src={{image1}}> </div>
+ <div class=picture> <img id=im2 src={{image2}}> </div>
+ <div class=picture> <img id=im3 src={{image3}}> </div>
+ <div class=picture> <img id=im4 src={{image4}}> </div>
+</div>
+</body>
+</html>
+
+{% endblock %}

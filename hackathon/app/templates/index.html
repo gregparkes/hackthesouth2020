@@ -10,7 +10,7 @@
 .quizbox {
     top: 0;
   display: grid;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 50% auto;
   bottom: 0;
   margin: auto;
   align-content: space-around;
@@ -66,7 +66,8 @@ h1 {
 }
 
 h2 {
-	font-family: "Lato", "Open Sans";
+    color :tomato;
+	font-family: "Lato", "Comic Sans";
 	font-size: 4vw;
 }
 
@@ -75,40 +76,56 @@ h2 {
 <script>
 $(document).ready(function(){
 
+let c = 0
+
 $('.picture').click(function(){
 var object = $(this).children('img').attr("src")
-var data = JSON.stringify(object);
-
+var data = JSON.stringify(data);
 $.ajax({
    type: "POST",
    url: "/getdata",
-   data: {"url":object},
-   success: function(){
-    alert("success")
-   },
+   data: {"url":object,"c":c},
+   success: function(data){
+     $('#im1').attr('src',data.image1)
+     $('#im2').attr('src',data.image2) 
+     $('#im3').attr('src',data.image3)  
+     $('#im4').attr('src',data.image4)
+      
+     if(data.tw){
+        alert("tutaj")
+        $('body').html("Movies that you want to watch are " + data.tw + " Thank you for your attention!!!")
+      
+     }
+  
+},
    error: function(){
     alert("error")
    }
 })
+$.when($.ajax("/getdata")).then(() => {
+    c+=1;
 
+});
 })
 })
+
 </script>
 
 
 </head>
 
 <body> 
+    <h2> Welcome to gluten-free and quantum-full meta post quasi non-parametrics bayesian unit [stone/inch*teacap] of cake &trade; </h2>
 		<div class="titleText">
 			<ul><h2>Ultimate film quiz</h2><ul>
 			<ul><p>Pick picture that is closest to your heart and we will give you a movie that you have always (subconciously) wanted to watch...</p><ul>
 		</div>
 
 <div class="quizbox">
- <div class=picture> <img src={{image1}}> </div>
- <div class=picture> <img src={{image2}}> </div>
- <div class=picture> <img src={{image3}}> </div>
- <div class=picture> <img src={{image4}}> </div>
+ <div class=picture> <img id=im1 src={{image1}}> </div>
+ <div class=picture> <img id=im2 src={{image2}}> </div>
+ <div class=picture> <img id=im3 src={{image3}}> </div>
+ <div class=picture> <img id=im4 src={{image4}}> </div>
 </div>
 </body>
 </html>
